@@ -1,0 +1,9 @@
+1. UGV
+	definire alcune traiettorie per lo ugv
+	modellare comportamento dello ugv (gain...)
+2. AGV
+	partire da formazione e altezza già impostate, verificare che il CoM/consenso sia rispettato con le comunicazioni, garantire distanza dal CoM (no scontri). partire dal leader following strategy
+3. 1+2
+	aggiungere la parte di tracking: average consensus sull'informazione ricevuta dai sensori. Partire dal leader following strategy. Partire da ugv fisso
+4. miglioramenti vari
+	decollo, comunicazione per creare formazione etc...
