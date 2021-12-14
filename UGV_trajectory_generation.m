@@ -58,3 +58,5 @@ for i = 1:(T/Ts-1)
 end
 
 plot(head_trajectory.time, head_trajectory.signals.values)
+figure(2)
+plot(pos_trajectory.signals.values(:,1), pos_trajectory.signals.values(:,2))
