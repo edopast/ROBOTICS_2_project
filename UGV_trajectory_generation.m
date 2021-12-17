@@ -6,8 +6,8 @@ T = 20;
 Ts = 1e-3;
 
 %% linear and angular desired velocities
-constant_desired_velocity_v = 0.6;
-constant_desired_velocity_w = 0.6;
+constant_desired_velocity_v = 0.36;
+constant_desired_velocity_w = 0.36;
 
 w_ref.signals.values = zeros(T/Ts,1);
 w_ref.signals.dimensions = 1;
@@ -18,8 +18,13 @@ v_ref.signals.dimensions = 1;
 v_ref.time = zeros(T/Ts,1);
 
 for i = 1:(T/Ts-1)
-    w_ref.signals.values(i+1) = constant_desired_velocity_v;
-    v_ref.signals.values(i+1) = constant_desired_velocity_w;
+    if (i < (T/Ts-1)/2)
+        w_ref.signals.values(i+1) = constant_desired_velocity_w;
+    else
+        w_ref.signals.values(i+1) = -constant_desired_velocity_w;
+    end
+    
+    v_ref.signals.values(i+1) = constant_desired_velocity_v;
     w_ref.time(i+1) = Ts*i;
     
 end
@@ -34,10 +39,20 @@ pos_trajectory.time = v_ref.time;
 head_trajectory.time = v_ref.time;
 
 for i = 1:(T/Ts-1)
-    head_trajectory.signals.values(i+1,1) = head_trajectory.signals.values(i,1) + constant_desired_velocity_w*Ts;  % theta
+    if (i < (T/Ts-1)/2)
+        head_trajectory.signals.values(i+1,1) = head_trajectory.signals.values(i,1) + constant_desired_velocity_w*Ts;  % theta
+    else
+        head_trajectory.signals.values(i+1,1) = head_trajectory.signals.values(i,1) - constant_desired_velocity_w*Ts;  % theta
+    end
     pos_trajectory.signals.values(i+1,1) = (pos_trajectory.signals.values(i,1) + constant_desired_velocity_v*cos(head_trajectory.signals.values(i,1))*Ts);  % x
     pos_trajectory.signals.values(i+1,2) = (pos_trajectory.signals.values(i,2) + constant_desired_velocity_v*sin(head_trajectory.signals.values(i,1))*Ts); 
  
+end
+
+% error
+for i = 1:(T/Ts)
+    pos_trajectory.signals.values(i,1) = pos_trajectory.signals.values(i,1) + 0.4;
+    pos_trajectory.signals.values(i,2) = pos_trajectory.signals.values(i,2) + 0.1;
 end
 
 plot(head_trajectory.time, head_trajectory.signals.values);
