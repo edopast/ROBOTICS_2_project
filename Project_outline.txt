@@ -1,6 +1,25 @@
-1. UGV
+1. controllo UGV - FATTO da sistemare controllo
 	definire alcune traiettorie per lo ugv
 	modellare comportamento dello ugv (gain...)
+
+2. controllo AGV - FATTO
+
+3. Consenso al CoM polare - FATTO: eliminare il vincolo theta_0
+
+4. Ricavare l'omografia - per ora ricavato solo l'image plane
+
+5. Sistema di comunicazione, decollo etc... Collision avoidance?
+
+6. Cambio sistema di riferimento
+
+7. mantenere l'ugv nell'image plane
+
+8. Consensus sulla nuova posizione da raggiungere
+
+_____________________________________________________________
+
+Vecchio:
+
 2. AGV
 	partire da formazione e altezza già impostate, verificare che il CoM/consenso sia rispettato con le comunicazioni, garantire distanza dal CoM (no scontri). partire dal leader following strategy
 3. 1+2
