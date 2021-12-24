@@ -5,13 +5,14 @@ function [InImagePlane,X_ImagePlane,Y_ImagePlane] = computeCameraImage(DronePos,
 % PARAMS:
 % DronePos = The drone position wrt world frame (row vec)
 % DroneAng = The drone RPY angles [rad] wrt world frame (row vec)
-% UGVPos = UGV position (x,y) in the world frame. No angle needed. (row vec)
+% UGVPos = UGV position (x,y,z) in the world frame (row vec)
 % RETURNS:
 % InImagePlane = TRUE/FALSE bool variable that says if the point is in the 
 % real image plane, considering a frontal pinhole camera model
 % X_ImagePlane,Y_ImagePlane = x and y coordinates on the image plane
 % (centered at center of image plane), x pointing upwards, y pointing to
 % the right
+% Eg: [yn,x,y] = computeCameraImage([1.2 1.2 1.7],[0 0 pi+pi/6],[0 0 0]);
 
 %% the camera is taken from paper 3D_Power_Line_Extraction_from_Multiple_Aerial_Imag
 F = 3.6*10^-3;  % Focal length [m]
@@ -28,7 +29,7 @@ Z_camDrone = 0;  % [m]
 Tilt = -pi/4;  % [rad] -> the cam is pointing downwards 45°
 %Pan = 0;  % [rad] -> the cam is not rotated wrt drone's z axis
 
-%% [def] rotation from cam frame to drone frame (just a simple rotation)
+% [def] rotation from cam frame to drone frame (just a simple rotation)
 Rdrone_cam = [-sin(Tilt) 0  cos(Tilt);
               0         -1         0;
               cos(Tilt) 0  sin(Tilt)];
@@ -54,7 +55,7 @@ Transf_mat_drone_world = [Rworld_drone.' -(Rworld_drone.')*Tworld_drone;
                           0    0    0     1];
                       
 %% Transformation of UGV coordinates to drone frame, then to Camera frame
-homog_coords = Transf_mat_drone_world*[UGVPos.'; 0; 1];
+homog_coords = Transf_mat_drone_world*[UGVPos.'; 1];
 UGV_drone_coords = homog_coords(1:3,1);   % ugv in drone reference frame
 
 % camera
@@ -71,8 +72,8 @@ v = -(PixelDensity(2)/ImagePlaneSize(2))*x_imagePlane + PixelDensity(2)/2;
 u = (PixelDensity(1)/ImagePlaneSize(1))*y_imagePlane + PixelDensity(1)/2;
 
 % gaussian noise on pixel (zero-mean, sigma=2)
-v = v+ random('Normal',0,2);
-u = u+ random('Normal',0,2);
+%v = v+ random('Normal',0,2);
+%u = u+ random('Normal',0,2);
 
 % quantization (round to closest pixel)
 v=round(v);

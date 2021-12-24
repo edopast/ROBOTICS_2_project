@@ -7,7 +7,7 @@ UGV_pos_vector = [x_ugv.' y_ugv.'];
 
 figure (1)
 for j=1:501
-    [yn,x,y] = computeCameraImage([1.2 1.2 1.7],[0 0 pi+pi/6],UGV_pos_vector(j,:));
+    [yn,x,y] = computeCameraImage([1.2 1.2 1.7],[0 0 pi+pi/6],[UGV_pos_vector(j,:) 0]);
 
     if yn==1
        subplot(2,1,1)
