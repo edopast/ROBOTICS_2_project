@@ -9,8 +9,8 @@ P3 = [-0.2; -0.15; 0.2]; %[m]
 P4 = [-0.2; 0.15; 0.2]; %[m]
 UGV = [0; 0; 0];
 
-AGVpos = [0 -0.5 0.5];
-AGVrpy = [0 0 pi/2];
+AGVpos = [0.3 0.3 0.5];
+AGVrpy = [0 0 pi+pi/4];
 
 %% compute image plane points: what does the camera see?
 figure (1)
@@ -59,26 +59,24 @@ imagePoints= [y1+3.16*10^-3  2.37*10^-3-x1;
 worldPoints= [P1.';
               P2.';
               P3.';
-              P4.';];
+              P4.'];
           
 cameraParams = cameraParameters("IntrinsicMatrix",[3.6*10^-3 0 0;
-                                0 3.6*10^-3 0;
-                                2.37*10^-3 3.16*10^-3 1], "WorldUnits", 'm');
+                                                   0 3.6*10^-3 0;
+                                                   3.16*10^-3 2.37*10^-3 1], "WorldUnits", 'm');
                             
 [cameraOrientation,cameraLocation] = estimateWorldCameraPose(imagePoints,worldPoints,cameraParams);
 
-% pcshow(worldPoints,'VerticalAxis','Y','VerticalAxisDir','down', ...
-%      'MarkerSize',30);
-% hold on
-% plotCamera('Size',10,'Orientation',worldOrientation,'Location',...
-%      worldLocation);
-% hold off
+cameraOrientation = cameraOrientation.';    % Rotation matrix camera2world
+%cameraLocation                             % Translation camera wrt world
 
 %% go back to drone ref frame
 
-droneLocation = cameraLocation  % row vector
+Rcam2drone = [0   -sin(pi/4) cos(pi/4);
+              -1  0          0;
+              0   -cos(pi/4) -sin(pi/4)];   % camera to drone
 
-droneOrientation = [0   -sin(pi/4) cos(pi/4);
-                    -1  0          0;
-                    0   -cos(pi/4) -sin(pi/4)]*cameraOrientation
+droneOrientation = cameraOrientation*(Rcam2drone.') % Rotation matrix drone2world
+
+droneLocation = cameraLocation  % row vector, translation drone wrt world
 
