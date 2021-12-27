@@ -1,16 +1,15 @@
 clear all
 close all
               
-%UGV_pos = [0; 0; 0]; % the ugv is the "world frame" for the AGV, but
-%actually we should compute Pj points in a world frame (fixed)
+%UGV_pos = [0; 0; 0]; % the ugv is the "world frame" for the AGV
 P1 = [0.2; 0.15; 0.2]; %[m]
 P2 = [0.2; -0.15; 0.2]; %[m]
 P3 = [-0.2; -0.15; 0.2]; %[m]
 P4 = [-0.2; 0.15; 0.2]; %[m]
 UGV = [0; 0; 0];
 
-AGVpos = [1 1 1.414];
-AGVrpy = [0 0 pi+pi/4];
+AGVpos = [0.6 0 0];
+AGVrpy = [0 -pi/4 pi];
 
 %% compute image plane points: what does the camera see?
 figure (1)
@@ -21,11 +20,11 @@ ylabel('x axis of image plane [m] -->')
 [yn2,x2,y2] = computeCameraImage(AGVpos,AGVrpy,P2.');
 [yn3,x3,y3] = computeCameraImage(AGVpos,AGVrpy,P3.');
 [yn4,x4,y4] = computeCameraImage(AGVpos,AGVrpy,P4.');
-[ynugv,xugv,yugv] = computeCameraImage([1 1 1.414],[0 0 pi+pi/4],UGV.');
+[ynugv,xugv,yugv] = computeCameraImage(AGVpos,AGVrpy,UGV.');
 
 if ynugv==1
     hold on
-    plot(yugv,xugv,'xb','MarkerSize',2.5,'MarkerFaceColor','b')
+    plot(yugv,xugv,'xk','MarkerSize',8,'MarkerFaceColor','k')
     text(yugv,xugv,"ugv",'VerticalAlignment','top','HorizontalAlignment','center')
 end
 if yn1==1
@@ -49,5 +48,7 @@ if yn4==1
     text(y4,x4,num2str(4),'VerticalAlignment','top','HorizontalAlignment','center')
 end
 
-%%
-g_matrix = SingleP4P([x1;y1],[x2;y2],[x3;y3],[x4;y4])
+%% Function test
+
+[droneLocation,droneOrientation] = PoseReconstruction([x1 y1; x2 y2; x3 y3; x4 y4])
+
