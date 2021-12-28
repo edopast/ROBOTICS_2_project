@@ -72,8 +72,8 @@ v = -(PixelDensity(2)/ImagePlaneSize(2))*x_imagePlane + PixelDensity(2)/2;
 u = (PixelDensity(1)/ImagePlaneSize(1))*y_imagePlane + PixelDensity(1)/2;
 
 % gaussian noise on pixel (zero-mean, sigma=2)
-%v = v+ random('Normal',0,2);
-%u = u+ random('Normal',0,2);
+ v = v + random('Normal',0,4);
+ u = u + random('Normal',0,4);
 
 % quantization (round to closest pixel)
 v=round(v);
