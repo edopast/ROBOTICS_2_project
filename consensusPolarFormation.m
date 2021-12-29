@@ -103,7 +103,15 @@ function [agent] = consensusPolarFormation(agent, ugv, f_radius, new)
     agent.rho = state.rho(1:agent.n);
     agent.th  = state.th(1:agent.n);
     
-    % Update cartesian coords in the two frames
+    % Update cartesian coords in the two frames and get the travelled dist
+    prev_pos.xr = agent.xr;
+    prev_pos.yr = agent.yr;
     agent = polar2rel(agent, ugv);
     agent = rel2glob(agent, ugv);
-end
+    d_travel_x = agent.xr - prev_pos.xr;
+    d_travel_y = agent.yr - prev_pos.yr;
+    agent.travel_dist = sqrt(d_travel_x.*d_travel_x + d_travel_y.*d_travel_y); 
+
+    
+    
+   end
