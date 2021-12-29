@@ -15,10 +15,10 @@ yd = auv.yw+0.3*sin(auv.yaww);
 ugv_xd = ugv.xw+0.3*cos(ugv.hw);
 ugv_yd = ugv.yw+0.3*sin(ugv.hw);
 
-xdl = auv.xw+5*cos(auv.yaww+cam.fov.y/2);
-ydl = auv.yw+5*sin(auv.yaww+cam.fov.y/2);
-xdr = auv.xw+5*cos(auv.yaww-cam.fov.y/2);
-ydr = auv.yw+5*sin(auv.yaww-cam.fov.y/2);
+xdl = auv.xw+0.5*cos(auv.yaww+cam.fov.y/2);
+ydl = auv.yw+0.5*sin(auv.yaww+cam.fov.y/2);
+xdr = auv.xw+0.5*cos(auv.yaww-cam.fov.y/2);
+ydr = auv.yw+0.5*sin(auv.yaww-cam.fov.y/2);
 
 %% Plot heading direction, and camera FoV (in x)
 

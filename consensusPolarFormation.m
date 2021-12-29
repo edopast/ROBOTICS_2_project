@@ -1,22 +1,24 @@
-function [auv] = consensusPolarFormation(auv, ugv, f_radius, new)
-%% function that compute the position at the next iteration of the auvs with polar consensus
+function [agent] = consensusPolarFormation(agent, ugv, f_radius, new)
+%% function that compute the position at the next iteration of the agents with polar consensus
 
-    
+    if(new)
+        agent.th_dd = zeros(agent.n,1);
+    end
     K.rho = 0.1;
     
-    % Retrieve auvs positions wrt robot frame
-    auv = glob2rel(auv, ugv);
+    % Retrieve agents positions wrt robot frame
+    agent = glob2rel(agent, ugv);
     
     % Retrieve polar coords
-    auv = rel2polar(auv, ugv);
+    agent = rel2polar(agent, ugv);
     
     % Normalized distance error
-    auv.d_err = auv.rho - ones(auv.n , 1) * f_radius;
-    auv.d_err_norm = auv.d_err./auv.rho;
+    agent.d_err = agent.rho - ones(agent.n , 1) * f_radius;
+    agent.d_err_norm = agent.d_err./agent.rho;
     
     % Control matrix for rho
-    P_rho = [eye(auv.n)-diag(K.rho*auv.d_err)   K.rho*auv.d_err;
-             zeros(1,auv.n)                     1               ];
+    P_rho = [eye(agent.n)-diag(K.rho*agent.d_err)   K.rho*agent.d_err;
+             zeros(1,agent.n)                     1               ];
     
     % Consensus matrix per theta :
     % calcolare differenza delta (th_d) tra il drone e quello precedente;
@@ -26,8 +28,8 @@ function [auv] = consensusPolarFormation(auv, ugv, f_radius, new)
     
     % In questo consenso consderiamo solo i droni, l'UGV non serve
     
-    auv.th_d =[   auv.th(1)+2*pi - auv.th(auv.n);
-                    auv.th(2:auv.n) - auv.th(1:auv.n-1)];
+    agent.th_d =[   agent.th(1)+2*pi - agent.th(agent.n);
+                    agent.th(2:agent.n) - agent.th(1:agent.n-1)];
 
     % il vettore è costruito così: (v1' = theta(v1) +2pi)
     % | v1'-vn|    | th_d1 |
@@ -38,37 +40,35 @@ function [auv] = consensusPolarFormation(auv, ugv, f_radius, new)
     % |vn-vn-1|    | th_dn |
     
     % Definisco la matrice di average consensus:
-    coeff_th_d = 1/5 * ones(1, auv.n);
+    coeff_th_d = 1/5 * ones(1, agent.n);
     
     % matrice di consenso per delta theta:
     % se stesso
     P_th_d =  diag(coeff_th_d);
     % drone prima
-    P_th_d =  P_th_d + diag(coeff_th_d(2:auv.n),-1)  + diag(coeff_th_d(1),auv.n-1); 
+    P_th_d =  P_th_d + diag(coeff_th_d(2:agent.n),-1)  + diag(coeff_th_d(1),agent.n-1); 
     % drone dopo       
-    P_th_d =  P_th_d + diag(coeff_th_d(2:auv.n),+1)  + diag(coeff_th_d(1),-(auv.n-1));
+    P_th_d =  P_th_d + diag(coeff_th_d(2:agent.n),+1)  + diag(coeff_th_d(1),-(agent.n-1));
     % due droni prima
-    P_th_d =  P_th_d + diag(coeff_th_d(3:auv.n),-2)  + diag(coeff_th_d(1:2),auv.n-2); 
+    P_th_d =  P_th_d + diag(coeff_th_d(3:agent.n),-2)  + diag(coeff_th_d(1:2),agent.n-2); 
     % due droni dopo       
-    P_th_d =  P_th_d + diag(coeff_th_d(3:auv.n),+2)  + diag(coeff_th_d(1:2),-(auv.n-2));
+    P_th_d =  P_th_d + diag(coeff_th_d(3:agent.n),+2)  + diag(coeff_th_d(1:2),-(agent.n-2));
     
     % update delta -> obtain delta "desired" with consensus
     if(new) % calcola th_dd sulla base delle misurazioni attuali
-        auv.th_dd = P_th_d * auv.th_d;
-        disp("calcolato per la prima volta");
+        agent.th_dd = P_th_d * agent.th_d;
     else % calcola th_dd sulla base dei precedenti th_dd
-        auv.th_dd = P_th_d * auv.th_dd;
-        disp("calcolatosulle precedenti");
+        agent.th_dd = P_th_d * agent.th_dd;
     end
     
     
     % Ora si calcola l'errore di theta definito come:
     % delta_attuale - delta_desired -> poi normalizzato
-    auv.th_err = 0.5*(auv.th_d - auv.th_dd) / (2*pi);
+    agent.th_err = 0.5*(agent.th_d - agent.th_dd) / (2*pi);
     
     
-    auv.th_d_f =[    auv.th(1:auv.n-1) - auv.th(2:auv.n);
-                     auv.th(auv.n) - auv.th(1)-2*pi     ];
+    agent.th_d_f =[    agent.th(1:agent.n-1) - agent.th(2:agent.n);
+                     agent.th(agent.n) - agent.th(1)-2*pi     ];
    
 
     % La matrice di controllo P_th è fatta così:
@@ -84,26 +84,26 @@ function [auv] = consensusPolarFormation(auv, ugv, f_radius, new)
     % |  . . . .. . . . . .*  *   0  |   |                        |  0  |
     % |  0 . . .. . . . . . . 0   1  |   |  0 . . .. . . . . .  0 |  1  |
     
-    look_around = eye(auv.n) -2*diag(auv.th_err) + diag(auv.th_err(2:auv.n),-1) + diag(auv.th_err(2:auv.n),1) ;
-    look_around = look_around + diag(auv.th_err(1),-(auv.n-1));
+    look_around = eye(agent.n) -2*diag(agent.th_err) + diag(agent.th_err(2:agent.n),-1) + diag(agent.th_err(2:agent.n),1) ;
+    look_around = look_around + diag(agent.th_err(1),-(agent.n-1));
     
     
-    P_th = [ 0.8     zeros(1, auv.n-1)      0.2;
-             look_around(2:auv.n,:)           zeros(auv.n-1,1);
-             zeros(1,auv.n)                 1               ];
+    P_th = [ 0.8     zeros(1, agent.n-1)      0.2;
+             look_around(2:agent.n,:)           zeros(agent.n-1,1);
+             zeros(1,agent.n)                 1               ];
     
     
     % System update
-    state.rho = [auv.rho; 0];
-    state.th  = [auv.th;  0];
+    state.rho = [agent.rho; 0];
+    state.th  = [agent.th;  0];
   
     state.rho = P_rho * state.rho;
     state.th  = P_th  * state.th;
     
-    auv.rho = state.rho(1:auv.n);
-    auv.th  = state.th(1:auv.n);
+    agent.rho = state.rho(1:agent.n);
+    agent.th  = state.th(1:agent.n);
     
     % Update cartesian coords in the two frames
-    auv = polar2rel(auv, ugv);
-    auv = rel2glob(auv, ugv);
+    agent = polar2rel(agent, ugv);
+    agent = rel2glob(agent, ugv);
 end
