@@ -104,7 +104,7 @@ for i = 1:n
 end
  
 %example: which UAV do you want to plot? (choose between 1 and n)
-k = 7;
+k = 5;
 plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
 
 %% In this section, the pose of each drone is recovered

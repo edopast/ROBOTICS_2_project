@@ -8,7 +8,7 @@ P3 = [-0.2; -0.15; 0.2]; %[m]
 P4 = [-0.2; 0.15; 0.2]; %[m]
 UGV = [0; 0; 0];
 
-AGVpos = [0.6 0 0];
+AGVpos = [0.6 0.1 0];
 AGVrpy = [0 -pi/4 pi];
 
 %% compute image plane points: what does the camera see?
