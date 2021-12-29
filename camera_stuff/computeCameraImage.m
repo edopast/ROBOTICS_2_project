@@ -81,8 +81,10 @@ u=round(u);
 %% check if the point is inside the image plane, frontal pinhole camera
 if (v>=0) && (v<=2999) && (u>=0) && (u<=3999) && (UGV_Camera_coords(3) >= 0)
     InImagePlane = true;
-    X_ImagePlane = -(v - PixelDensity(2)/2)*(ImagePlaneSize(2)/PixelDensity(2));
-    Y_ImagePlane = (u - PixelDensity(1)/2)*(ImagePlaneSize(1)/PixelDensity(1));
+       X_ImagePlane = -(v - PixelDensity(2)/2)*(ImagePlaneSize(2)/PixelDensity(2));
+       Y_ImagePlane = (u - PixelDensity(1)/2)*(ImagePlaneSize(1)/PixelDensity(1));
+%         X_ImagePlane = v;
+%         Y_ImagePlane = u;
 else
     InImagePlane = false;
     X_ImagePlane = 0;
