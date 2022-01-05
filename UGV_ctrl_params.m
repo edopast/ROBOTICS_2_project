@@ -1,5 +1,5 @@
 %% UGV control parameters
-ctrl.ksi = 0.01;
+ctrl.ksi = 0.05;
 ctrl.a = 5;
 %considering linear/circular trajectory
 
