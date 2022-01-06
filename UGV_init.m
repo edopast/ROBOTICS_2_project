@@ -8,34 +8,20 @@ run UGV_trajectory_generation.m
 run UGV_ctrl_params.m
 
 %% simulate
-%open_system('UGV_21a.slx');
+open_system('UGV_21a.slx');
 out = sim('UGV_21a.slx', 'ReturnWorkspaceOutputs', 'on');
 
 %% Timesteps visualization
 
-figure(4)
+
+f=figure(1);
 axis([-3 2 -0.5 3]);
-title('UGV trajectory x10 speed');
+title('UGV trajectory');
 grid on
 
-for i = 1:(T/Ts-1)
-    plot(pos_trajectory.signals.values(i,1), pos_trajectory.signals.values(i,2), 'ob', 'MarkerFaceColor','b');
-    hold on
-%     real_time = 0.001*i; %[s]
-%     time_index_simulation = 1;
-%     for j=1:size(out.UGVRealPose.time,1)
-%        next_simulation_time = out.UGVRealPose.time(j+1,1);
-%        if next_simulation_time>real_time
-%            time_index_simulation = j;
-%            break;
-%        end
-%     end
-%     
-%     plot(out.UGVRealPose.signals.values(time_index_simulation,1), out.UGVRealPose.signals.values(time_index_simulation,2), 'or', 'MarkerFaceColor','r');
-%     
-    %hold off
-    %pause(0.0001)
-end
+c = uicontrol(f,'Style','slider','Position',[50 5 450 15], 'Min', 0, 'Max', T/Ts-2,'SliderStep', [0.0005 0.005], 'BackgroundColor', '#FFFFFF');
+c.String = 'Time [s]';
+c.Callback = {@plotUGVSlider,pos_trajectory,out};
 
 %% plot desired trajectory
 hold off
