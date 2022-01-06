@@ -1,4 +1,4 @@
-%% UGV control parameters
+%% UAV control parameters
 
 ctrl.k_roll_p = 2.44;
 ctrl.k_roll_d = 0.568;

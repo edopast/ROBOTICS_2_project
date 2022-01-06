@@ -1,26 +1,26 @@
 clear all
 close all
               
-%UGV_pos = [0; 0; 0]; % the ugv is the "world frame" for the AGV
+%UGV_pos = [0; 0; 0]; % the ugv is the "world frame" for the UAV
 P1 = [0.2; 0.15; 0.2]; %[m]
 P2 = [0.2; -0.15; 0.2]; %[m]
 P3 = [-0.2; -0.15; 0.2]; %[m]
 P4 = [-0.2; 0.15; 0.2]; %[m]
 UGV = [0; 0; 0];
 
-AGVpos = [0.6 0.1 0];
-AGVrpy = [0 -pi/4 pi];
+UAVpos = [0.6 0.1 0];
+UAVrpy = [0 -pi/4 pi];
 
 %% compute image plane points: what does the camera see?
 figure (1)
 axis([-3.16*10^-3 3.16*10^-3  -2.37*10^-3  2.37*10^-3])
 xlabel('y axis of image plane [m] -->') 
 ylabel('x axis of image plane [m] -->')
-[yn1,x1,y1] = computeCameraImage(AGVpos,AGVrpy,P1.');
-[yn2,x2,y2] = computeCameraImage(AGVpos,AGVrpy,P2.');
-[yn3,x3,y3] = computeCameraImage(AGVpos,AGVrpy,P3.');
-[yn4,x4,y4] = computeCameraImage(AGVpos,AGVrpy,P4.');
-[ynugv,xugv,yugv] = computeCameraImage(AGVpos,AGVrpy,UGV.');
+[yn1,x1,y1] = computeCameraImage(UAVpos,UAVrpy,P1.');
+[yn2,x2,y2] = computeCameraImage(UAVpos,UAVrpy,P2.');
+[yn3,x3,y3] = computeCameraImage(UAVpos,UAVrpy,P3.');
+[yn4,x4,y4] = computeCameraImage(UAVpos,UAVrpy,P4.');
+[ynugv,xugv,yugv] = computeCameraImage(UAVpos,UAVrpy,UGV.');
 
 if ynugv==1
     hold on

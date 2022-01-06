@@ -1,5 +1,5 @@
 function [droneLocation,droneOrientation] = PoseReconstruction(ImagePoints)
-% POSERECONSTRUCTION This function retrieves the absolute pose of the AGV
+% POSERECONSTRUCTION This function retrieves the absolute pose of the UAV
 % wrt the UGV reference frame. It uses 4 predefined points, so it
 % implements P4P. ImagePoints is a 4x2 matrix: on each row, the [x y]
 % coords in the image plane of the 4 points (order: 1;2;3;4). Remember that

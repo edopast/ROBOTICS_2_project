@@ -1,4 +1,4 @@
-%% AGV trajectory generation
+%% UAV trajectory generation
 % always start from [0 0 0]
 
 % Experimental time [s]
