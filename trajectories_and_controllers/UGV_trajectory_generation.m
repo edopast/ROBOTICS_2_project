@@ -2,7 +2,7 @@
 % always start from [0 0 0]
 
 % Experimental time [s]
-T = 30;
+T = 40;
 Ts = 1e-3;
 
 %% linear and angular desired velocities
@@ -34,21 +34,28 @@ for i = 1:(T/Ts-1)
         w_ref.signals.values(i+1) = constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.8*constant_desired_velocity_v;
     % go straight a little bit
-    elseif (i>8000 && i<=10000)
+    elseif (i>8000 && i<=9500)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = constant_desired_velocity_v;
     % turn in other direction with greater velocity
-    elseif (i>10000 && i<=21000)
-        w_ref.signals.values(i+1) = -1.3*constant_desired_velocity_w;
-        v_ref.signals.values(i+1) = 0.5*constant_desired_velocity_v;
+    elseif (i>9500 && i<=18000)
+        w_ref.signals.values(i+1) = -1.6*constant_desired_velocity_w;
+        v_ref.signals.values(i+1) = 0.4*constant_desired_velocity_v;
     % straight again (higher velocity)
-    elseif (i>21000 && i<=25000)
+    elseif (i>18000 && i<=24000)
         w_ref.signals.values(i+1) = 0;
-        v_ref.signals.values(i+1) = 1.5*constant_desired_velocity_v;
+        v_ref.signals.values(i+1) = 1.2*constant_desired_velocity_v;
+    % decelerate
+    elseif (i>24000 && i<=25000)
+        w_ref.signals.values(i+1) = 0;
+        v_ref.signals.values(i+1) = 1.1*constant_desired_velocity_v;    
     % turn
-    else
+    elseif (i>25000 && i<=33000)
         w_ref.signals.values(i+1) = -constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.7*constant_desired_velocity_v;
+    else
+        w_ref.signals.values(i+1) = 0;
+        v_ref.signals.values(i+1) = constant_desired_velocity_v;
     end
     
     w_ref.time(i+1) = Ts*i;
