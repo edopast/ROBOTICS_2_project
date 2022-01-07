@@ -42,11 +42,11 @@ for i = 1:(T/Ts-1)
         w_ref.signals.values(i+1) = -1.6*constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.4*constant_desired_velocity_v;
     % straight again (higher velocity)
-    elseif (i>18000 && i<=24000)
+    elseif (i>18000 && i<=23500)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = 1.2*constant_desired_velocity_v;
     % decelerate
-    elseif (i>24000 && i<=25000)
+    elseif (i>23500 && i<=25000)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = 1.1*constant_desired_velocity_v;    
     % turn
@@ -64,22 +64,23 @@ end
 v_ref.time = w_ref.time;
 
 %% obtain the trajectory in x,y,theta
-pos_trajectory.signals.values = zeros(T/Ts,2);
-head_trajectory.signals.values = zeros(T/Ts,1);
-pos_trajectory.signals.dimensions = 2;
-head_trajectory.signals.dimensions = 1;
-pos_trajectory.time = v_ref.time;
-head_trajectory.time = v_ref.time;
+ugv.trajectory.signals.values = zeros(T/Ts,3);
+ugv.trajectory.signals.dimensions = 3;
+ugv.trajectory.time = v_ref.time;
 
 for i = 1:(T/Ts-1)
-    head_trajectory.signals.values(i+1,1) = head_trajectory.signals.values(i,1) + w_ref.signals.values(i)*Ts;  % theta
-    pos_trajectory.signals.values(i+1,1) = (pos_trajectory.signals.values(i,1) + v_ref.signals.values(i)*cos(head_trajectory.signals.values(i,1))*Ts);  % x
-    pos_trajectory.signals.values(i+1,2) = (pos_trajectory.signals.values(i,2) + v_ref.signals.values(i)*sin(head_trajectory.signals.values(i,1))*Ts); 
+    ugv.trajectory.signals.values(i+1,3) = ugv.trajectory.signals.values(i,3) + w_ref.signals.values(i)*Ts;  % theta
+    ugv.trajectory.signals.values(i+1,1) = (ugv.trajectory.signals.values(i,1) + v_ref.signals.values(i)*cos(ugv.trajectory.signals.values(i,3))*Ts);  % x
+    ugv.trajectory.signals.values(i+1,2) = (ugv.trajectory.signals.values(i,2) + v_ref.signals.values(i)*sin(ugv.trajectory.signals.values(i,3))*Ts);  % y
  
 end
 
-% % error
-% for i = 1:(T/Ts)
-%     pos_trajectory.signals.values(i,1) = pos_trajectory.signals.values(i,1) + 0.4;
-%     pos_trajectory.signals.values(i,2) = pos_trajectory.signals.values(i,2) + 0.1;
-% end
+%% delete useless stuff
+clear constant_desired_velocity_v
+clear constant_desired_velocity_w
+
+%% For Simulink Only:
+pos_trajectory.signals.values = ugv.trajectory.signals.values(:,1:2);
+pos_trajectory.time = ugv.trajectory.time;
+head_trajectory.signals.values = ugv.trajectory.signals.values(:,3);
+head_trajectory.time = ugv.trajectory.time;
