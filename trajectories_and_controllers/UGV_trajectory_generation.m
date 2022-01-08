@@ -1,13 +1,12 @@
 %% UGV trajectory generation
-% always start from [0 0 0]
 
 % Experimental time [s]
 T = 40;
 Ts = 1e-3;
 
 %% linear and angular desired velocities
-constant_desired_velocity_v = 0.36;
-constant_desired_velocity_w = 0.36;
+constant_desired_velocity_v = 0.35;
+constant_desired_velocity_w = 0.35;
 
 % define 2 vectors holding, for each ms, the wanted angular and linear
 % velocities
@@ -42,11 +41,7 @@ for i = 1:(T/Ts-1)
         w_ref.signals.values(i+1) = -1.6*constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.4*constant_desired_velocity_v;
     % straight again (higher velocity)
-    elseif (i>18000 && i<=23500)
-        w_ref.signals.values(i+1) = 0;
-        v_ref.signals.values(i+1) = 1.2*constant_desired_velocity_v;
-    % decelerate
-    elseif (i>23500 && i<=25000)
+    elseif (i>18000 && i<=25000)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = 1.1*constant_desired_velocity_v;    
     % turn
@@ -67,6 +62,11 @@ v_ref.time = w_ref.time;
 ugv.trajectory.signals.values = zeros(T/Ts,3);
 ugv.trajectory.signals.dimensions = 3;
 ugv.trajectory.time = v_ref.time;
+% uncomment the next lines if you want to have a small initial offset
+% in position / orientation:
+% ugv.trajectory.signals.values(1,1) = 0.05;
+% ugv.trajectory.signals.values(1,2) = 0.05;
+% ugv.trajectory.signals.values(1,3) = 0.02;
 
 for i = 1:(T/Ts-1)
     ugv.trajectory.signals.values(i+1,3) = ugv.trajectory.signals.values(i,3) + w_ref.signals.values(i)*Ts;  % theta
