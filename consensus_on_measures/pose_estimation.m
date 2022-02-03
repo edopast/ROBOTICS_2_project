@@ -113,7 +113,7 @@ function [estimated_x,estimated_y,convex_hull_estimated] = pose_estimation(ugv,f
     
     for i=1:form_auv.n
         [droneLocation{i,1},droneOrientation{i,1}] = PoseReconstruction([point_1x(i) point_1y(i); ...
-            point_2x(i) point_2y(i); point_3x(i) point_3y(i); point_4x(i) point_4y(i)], ugv);
+            point_2x(i) point_2y(i); point_3x(i) point_3y(i); point_4x(i) point_4y(i)]);
         estimated_x(i) = droneLocation{i,1}(1);
         estimated_y(i) = droneLocation{i,1}(2);
     end

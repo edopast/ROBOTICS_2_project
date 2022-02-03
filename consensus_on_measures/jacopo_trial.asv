@@ -80,19 +80,36 @@ for i = 1:1
    
 end
 
-convergence_UAV = zeros(n_iteration ,form_auv.n); 
+
 for i = 1 : n_iteration
-    for j = 1:form_auv.n
-     convergence_UAV(i,j) = consensus_average_x{i}(j);
-    end
+    
+    
+    
 end
-
-for k = 1:form_auv.n
-     plot(convergence_UAV(:,k), '-x')
-     hold on
+for j = 1:form_auv.n
+        convergence_UAV(i,j) = consensus_average_x{i}(j);
 end
+plot(convergence_UAV(:,i), '-x')
+    hold on 
 
- 
+% 
+% 
+% hold on 
+% plot(convergence_UAV2, '-x')
+% hold on 
+% plot(convergence_UAV3, '-x')
+% hold on 
+% plot(convergence_UAV4, '-x')
+% hold on 
+% plot(convergence_UAV5, '-x')
+% hold on 
+% plot(convergence_UAV6, '-x')
+% hold on 
+% plot(convergence_UAV7, '-x')
+% hold on 
+% waitforbuttonpress;
+
+
 
 
 
