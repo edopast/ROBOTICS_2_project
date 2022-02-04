@@ -1,8 +1,8 @@
 function [auv] = rel2glob(auv, ugv)
 %% revert global positions from relative positions
 
-auv.xw = auv.xr + ugv.xw;
-auv.yw = auv.yr + ugv.yw;
+auv.xw = auv.xr*cos(ugv.hw) - auv.yr*sin(ugv.hw)+ ugv.xw;
+auv.yw = auv.xr*sin(ugv.hw) + auv.yr*cos(ugv.hw)+ ugv.yw;
 auv.zw = auv.zr;
 
 auv.rollw = auv.rollr;
