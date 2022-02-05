@@ -31,6 +31,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     
     % we force the theta value of the first auv to be zero
   
+    temp_th = agents.th(1);
     agents.th(1) = 0;
     
     agents.dth =[   agents.th(1)+2*pi - agents.th(agents.n);
@@ -82,6 +83,10 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
 %% Theta and rho controllers
 
     % theta desired is defined according to the auv's ID
+    if temp_th > pi
+        temp_th = temp_th - 2*pi;
+    end
+    agents.th(1) = temp_th;
     agents.th_d = (agents.id-1).* agents.dth_d;
     agents.th_err = agents.th_d - agents.th;
     
@@ -95,7 +100,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     
     for i = 1 : agents.n
         if abs(agents.th_err(i)) > 0.1
-            agents.rho_d(i) = formation.r + agents.id(i) * formation.offset/1.5;
+            agents.rho_d(i) = formation.r + agents.id(i) * formation.offset;
             agents.zr_d(i) = formation.alt + agents.id(i) * formation.offset;
         else
             agents.rho_d(i) = formation.r;
