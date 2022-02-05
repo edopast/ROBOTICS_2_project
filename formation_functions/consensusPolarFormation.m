@@ -86,6 +86,8 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     agents.th_err = agents.th_d - agents.th;
     
     agents.rho_d = zeros(agents.n,1);
+    agents.zr_d = zeros(agents.n,1);
+    agents.yawr_d = pi + agents.th;
     
     % Controller gains
     agents.K_rho = 0.3 * ones(agents.n,1);
@@ -94,7 +96,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     for i = 1 : agents.n
         if abs(agents.th_err(i)) > 0.1
             agents.rho_d(i) = formation.r + agents.id(i) * formation.offset;
-            agents.zr(i) = formation.alt + agents.id(i) * formation.offset;
+            agents.zr_d(i) = formation.alt + agents.id(i) * formation.offset;
         else
             agents.rho_d(i) = formation.r;
             agents.zr(i) = formation.alt;
@@ -103,13 +105,15 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     end
     
     agents.rho_err = agents.rho_d - agents.rho;
+    agents.zr_err = agents.zr_d - agents.zr;
+    agents.yawr_err = agents.yawr_d - agents.yawr;
 
     % P-controllers
     agents.th = agents.th +  agents.K_th .* agents.th_err;
     agents.rho = agents.rho + agents.K_rho .* agents.rho_err;
+    agents.zr = agents.zr + agents.K_rho .* agents.zr_err;
+    agents.yawr = agents.yawr + 0.1* agents.yawr_err;
     
-    % Yaw controller
-    agents.yawr = pi + agents.th;
     
     % Update cartesian coords in the two frames and get the travelled dist
     prev_pos.xr = agents.xr;
