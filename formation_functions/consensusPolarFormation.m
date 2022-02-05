@@ -1,12 +1,13 @@
 function [agents] = consensusPolarFormation(agents, ugv, formation, new, progress_rate)
 %% Function that compute the position at the next iteration of the agentss with polar consensus
 
-% Paramiters description:
+% Parameters description:
 % agents: AUVs data structure
 % ugv: ugv data structure
 % formation_r: radius of the circumference describing the formation
 % new: specify if a new AUV entered the formation, and so a new formation
 % has to be calculated, the store parameters are cleared
+% progress_rate: progress rate for the consensus convergence
 
     
     if(new)
@@ -14,23 +15,11 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     end
     
     % Retrieve agents positions wrt robot frame
-    agents = glob2rel(agents, ugv);
+    % agents = glob2rel(agents, ugv);
     
     % Retrieve polar coords
     agents = rel2polar(agents, ugv);
     
-%% Rho distance controller
-
-    % Gain for the rho position controller
-%     K.rho = 0.1;
-    
-    % Normalized distance error
-%     agents.rho_err = agents.rho - ones(agents.n , 1) * formation_r;
-%     agents.rho_err_norm = agents.rho_err./agents.rho;
-    
-    % Control matrix for rho
-%     P_rho = [eye(agents.n)-diag(K.rho*agents.rho_err)   K.rho*agents.rho_err;
-%              zeros(1,agents.n)                     1               ];
          
 %% Consensus on theta to formation
 
@@ -47,7 +36,6 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     agents.dth =[   agents.th(1)+2*pi - agents.th(agents.n);
                     agents.th(2:agents.n) - agents.th(1:agents.n-1)];
     
-
     % dth structure: (v1' = theta(v1) +2pi)
     % | v1'-vn|    | th_d1 |
     % | v2-v1 |    | th_d2 |
@@ -79,8 +67,6 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     eps = 1/3;
     P_dth = eye(agents.n) - eps*L;
     
-    
-
     % update delta -> obtain delta "desired" with consensus
     if(new) % compute delta desired based on actual measurement
         agents.dth_d = P_dth * agents.dth;
@@ -93,82 +79,49 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
         end
     end
 
-    % normalized delta theta error (actual delta theta - desired delta theta)
-    %agents.dth_err = 0.5*(agents.dth - agents.dth_d) / (2*pi);
-   
-    % Control matrix for theta position:
-    % the first AUV is simply sent to theta = 0
-    % other AUVs are moved according to the error between the previous and
-    % the the next neighbors.
-  
-     
-    % | 0.8  0   0   0  . . . .  0.2 |   | 0.8  0   0   0  . . .  | 0.2 |
-    % |  *   *   0   0  . . . .   0  |   |                        |  0  |
-    % |  0   *   *   0  . . . .   0  |   |                        |  0  |
-    % |  0   0   *   *  . . . .   0  | = |        look_around     |  0  |
-    % |  . . . .. . . . . .*  *   0  |   |                        |  0  |
-    % |  0 . . .. . . . . . . 0   1  |   |  0 . . .. . . . . .  0 |  1  |
-    
-%     look_around = eye(agents.n) -2*diag(agents.dth_err) + diag(agents.dth_err(2:agents.n),-1) + diag(agents.dth_err(2:agents.n),1) ;
-%     look_around = look_around + diag(agents.dth_err(1),-(agents.n-1));
-%     
-%     
-%     P_th = [ 0.5     zeros(1, agents.n-1)      0.5;
-%              look_around(2:agents.n,:)         zeros(agents.n-1,1);
-%              zeros(1,agents.n)                 1               ];
-%     
+%% Theta and rho controllers
 
-    
-%     % System update
-%     state.rho = [agents.rho; 0];
-%     %state.th  = [agents.th;  0];
-%   
-%     state.rho = P_rho * state.rho;
-%     %state.th  = P_th  * state.th;
-%     
-%     agents.rho = state.rho(1:agents.n);
-   % agents.th  = state.th(1:agents.n);
+    % theta desired is defined according to the auv's ID
     agents.th_d = (agents.id-1).* agents.dth_d;
     agents.th_err = agents.th_d - agents.th;
     
     agents.rho_d = zeros(agents.n,1);
     
-        
+    % Controller gains
+    agents.K_rho = 0.3 * ones(agents.n,1);
+    agents.K_th = 0.05 * ones(agents.n,1);
+    
     for i = 1 : agents.n
-        if agents.th_err(i) > 0.05
+        if abs(agents.th_err(i)) > 0.1
             agents.rho_d(i) = formation.r + agents.id(i) * formation.offset;
             agents.zr(i) = formation.alt + agents.id(i) * formation.offset;
         else
             agents.rho_d(i) = formation.r;
             agents.zr(i) = formation.alt;
+%             agents.K_th(i) = 0.01;
         end
         
     end
     
-%% Theta and rho controllers
-
     agents.rho_err = agents.rho_d - agents.rho;
 
-    agents.th = agents.th +  0.1 * agents.th_err;
-    agents.rho = agents.rho + 0.1 * agents.rho_err;
+    % P-controllers
+    agents.th = agents.th +  agents.K_th .* agents.th_err;
+    agents.rho = agents.rho + agents.K_rho .* agents.rho_err;
     
-    %agents.th = 0.1*(agents.id-1).* agents.dth_d + 0.9 * agents.th;
+    % Yaw controller
+    agents.yawr = pi + agents.th;
     
     % Update cartesian coords in the two frames and get the travelled dist
     prev_pos.xr = agents.xr;
     prev_pos.yr = agents.yr;
     
-    agents.yawr = pi + agents.th;
-    
-    
-    
     agents = polar2rel(agents, ugv);
     agents = rel2glob(agents, ugv);
+    
     d_travel_x = agents.xr - prev_pos.xr;
     d_travel_y = agents.yr - prev_pos.yr;
     agents.travel_dist = sqrt(d_travel_x.*d_travel_x + d_travel_y.*d_travel_y); 
-    
-   
     
     
    end
