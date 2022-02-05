@@ -98,7 +98,6 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
         else
             agents.rho_d(i) = formation.r;
             agents.zr(i) = formation.alt;
-%             agents.K_th(i) = 0.01;
         end
         
     end
