@@ -90,12 +90,12 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     agents.yawr_d = pi + agents.th;
     
     % Controller gains
-    agents.K_rho = 0.3 * ones(agents.n,1);
-    agents.K_th = 0.05 * ones(agents.n,1);
+    agents.K_rho = 0.08 * ones(agents.n,1);
+    agents.K_th = 0.03 * ones(agents.n,1);
     
     for i = 1 : agents.n
         if abs(agents.th_err(i)) > 0.1
-            agents.rho_d(i) = formation.r + agents.id(i) * formation.offset;
+            agents.rho_d(i) = formation.r + agents.id(i) * formation.offset/1.5;
             agents.zr_d(i) = formation.alt + agents.id(i) * formation.offset;
         else
             agents.rho_d(i) = formation.r;

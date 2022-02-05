@@ -19,6 +19,8 @@ for i = flip(index)
 
     struct.rollr(i)  = [];       
     struct.pitchr(i) = [];       
-    struct.yawr(i)   = [];  
+    struct.yawr(i)   = [];
+    
+    struct.real_traj(i) = [];
 end
 end
