@@ -2,7 +2,7 @@
 % always start from [0 0 0]
 
 % Experimental time [s]
-T = 40;
+T = 50;
 Ts = 1e-3;
 
 %% desired position trajectory + desired yaw angle to track
