@@ -1,25 +1,9 @@
-function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] = pose_estimation(ugv,form_auv,t)
-%% Function definition
-% INPUT: 
-%       - ugv: we exploit its trajectory geneerated initially;
-%       - form_uav: actual behavior of the formation;
-%       - t: time instant in which evaluate ugv trajectory
-
-%% OUTPUT: 
-%         - estimated_x: vector which elements are the estimation of UAVs
-%                        present in the foromation wrt axis x;
-%         - estimated_y: vector which elements are the estimation of UAVs
-%                        present in the foromation wrt axis y;
-%         - convex_hull_estimated: convexhull constructed with estimated_x,
-%                                  estimated_y; plotting reason
-
-% since reference system is solidal with UGV, we have [0,0] as coords
     ugv_xw = 0;   
     ugv_yw = 0; 
     ugv_zw = 0;
 % the motion of the UGV is simulated at UAVs level (offset variable)
-    x_offset = ugv.trajectory.signals.values(t,1);
-    y_offset = ugv.trajectory.signals.values(t,2);
+    x_offset = ugv.trajectory.signals.values(2000,1);
+    y_offset = ugv.trajectory.signals.values(2000,2);
     
     form_ref_x= zeros(form_auv.n,1);
     form_ref_y= zeros(form_auv.n,1);
@@ -82,15 +66,6 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
             form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], P4.');
     
     end
-
-    points_image_plane_y = cell(form_auv.n,1);
-
-   
-    for k = 1:form_auv.n
-        points_image_plane_y{k} = [point_1y(k), point_2y(k),...
-            point_3y(k), point_4y(k)];
-    end
-
     
     % bool variable to check if all UAVs had the capability of see the UGV
     UGV_seen = 0;
@@ -106,33 +81,23 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
         disp("cannot recover ugv positions from all uavs");
     end
     % plot the actual image that is seen by one of the UAVs
-    % k = 1;
-    % plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
-    %     point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), ...
-    %     point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
-
-    % initialization of variable that will contain relative pose and
-    % orientation of the UAVs wrt the UGV
-    droneLocation = cell(form_auv.n,1);
-    droneOrientation = cell(form_auv.n,1);
-    % estimated_x, estimated_y represent only one element of the 
-    % droneLocation variable
-    estimated_x = zeros(form_auv.n,1);
-    estimated_y = zeros(form_auv.n,1);
-
+    k = 3;
+    plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
+        point_4_bool(k), x_result(k),y_result(k), point_1x(k),point_1y(k), ...
+        point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
+    hold on 
+    [estimated_after.x, estimated_after.y,... 
+        convex_hull_estimated_after, points_image_plane_y] = pose_estimation(ugv,form_auv,2000);
 
     
-    for i=1:form_auv.n
-        [droneLocation{i,1},droneOrientation{i,1}] = PoseReconstruction([point_1x(i) point_1y(i); ...
-            point_2x(i) point_2y(i); point_3x(i) point_3y(i); point_4x(i) point_4y(i)]);
-        estimated_x(i) = droneLocation{i,1}(1);
-        estimated_y(i) = droneLocation{i,1}(2);
-    end
-    % convex_hull_estimated is a variable exploited only for plotting aims
-    convex_hull_estimated = zeros(form_auv.n,2).';
-    for i = 1:form_auv.n
-           convex_hull_estimated(1, i) = estimated_x(i);
-           convex_hull_estimated(2, i) = estimated_y(i);  
-    end
 
-end
+    centre_y = yaw_error(points_image_plane_y, form_auv);
+% disp(centre_x(1));
+    plot(centre_y(3), 0, 'o');
+    hold on 
+    waitforbuttonpress;
+    
+
+
+
+

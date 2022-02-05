@@ -9,7 +9,7 @@ function [] = correct_formation(ugv, form_auv, t)
 %  (and also the actual ones)
 
 n=form_auv.n;    % number of vertex of the regular polygon formation 
-r=2;        % ray associated to the formation
+r=3;        % ray associated to the formation
 
 ugv_xw = ugv.trajectory.signals.values(t,1);  
 ugv_yw = ugv.trajectory.signals.values(t,2);
