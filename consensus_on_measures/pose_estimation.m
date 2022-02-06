@@ -7,7 +7,7 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
 
 %% OUTPUT: 
 %         - estimated_x: vector which elements are the estimation of UAVs
-%                        present in the foromation wrt axis x;
+%                        present in the formation wrt axis x;
 %         - estimated_y: vector which elements are the estimation of UAVs
 %                        present in the foromation wrt axis y;
 %         - convex_hull_estimated: convexhull constructed with estimated_x,
@@ -26,9 +26,9 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
     form_ref_z= zeros(form_auv.n,1);
    
     for i = 1:form_auv.n
-        form_ref_x(i,1) = form_auv.xw(i,1)-x_offset;
-        form_ref_y(i,1) = form_auv.yw(i,1)-y_offset;
-        form_ref_z(i,1) = form_auv.zw(i,1);
+        form_ref_x(i,1) = form_auv.xr(i,1)-x_offset;
+        form_ref_y(i,1) = form_auv.yr(i,1)-y_offset;
+        form_ref_z(i,1) = form_auv.zr(i,1);
         % da modificare l'altezza ottenuta dalla formazione 
     end
   
@@ -66,20 +66,20 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
     for i = 1:form_auv.n
         
         [yn(i),x_result(i),y_result(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
-            form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], ...
+            form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], ...
             [ugv_xw ugv_yw 0]);
     
         [point_1_bool(i),point_1x(i),point_1y(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
-            form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], P1.');
+            form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], P1.');
     
         [point_2_bool(i),point_2x(i),point_2y(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
-            form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], P2.');
+            form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], P2.');
     
         [point_3_bool(i),point_3x(i),point_3y(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
-            form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], P3.');
+            form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], P3.');
     
         [point_4_bool(i),point_4x(i),point_4y(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
-            form_ref_z(i,1)], [form_auv.rollw(i,1) form_auv.pitchw(i,1) form_auv.yaww(i,1)], P4.');
+            form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], P4.');
     
     end
 
@@ -98,13 +98,22 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
         if yn(i) && point_1_bool(i) && point_2_bool(i) && point_3_bool(i) && point_4_bool(i)
             UGV_seen = UGV_seen+1;
         end
+
     end
 
-    if(UGV_seen == form_auv.n)
-        ;
-    else 
-        disp("cannot recover ugv positions from all uavs");
+    if(UGV_seen ~= form_auv.n)
+        for i = 1:form_auv.n
+            if yn(i) && point_1_bool(i) && point_2_bool(i) && point_3_bool(i) && point_4_bool(i)
+                ;
+            else
+                disp("the following UAVs do not see the UGV");
+                disp(i);
+            end
+
+        end
+        %error("cannot recover ugv positions from all uavs");
     end
+    
     % plot the actual image that is seen by one of the UAVs
     % k = 1;
     % plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...

@@ -1,4 +1,4 @@
-function [W] = graph_setup(form_auv)
+function [W, G] = graph_setup(form_auv)
     %% INPUT: the formation of UAVs; the variable that is exploited here 
     % only related to the number of UAVs that are actually entered into the 
     % formation
@@ -29,9 +29,6 @@ function [W] = graph_setup(form_auv)
     end
     
     G = graph(A);
-    % plotting the graph generated
-    h = plot(G);
-    layout(h,'subspace')
     
     
     % now we define the elements inside the "Metropolis matrix"
