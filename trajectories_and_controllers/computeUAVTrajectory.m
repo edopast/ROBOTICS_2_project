@@ -12,11 +12,11 @@ time_vector= 0.001:0.001:time;
 Trajectory(:,5)= time_vector.';
 
 % check if yaw angle turning velocity is too big
-if ( abs(NextPose(4) - Pose(4))/time > 1.4)  % more than 1.4 rad/s
+if ( abs(NextPose(4) - Pose(4))/time > 1.5)  % more than 1.5 rad/s
     if NextPose(4)>Pose(4)
-        NextPose(4) = 1.4*time + Pose(4);
+        NextPose(4) = 1.5*time + Pose(4);
     else
-        NextPose(4) = -1.4*time + Pose(4);
+        NextPose(4) = -1.5*time + Pose(4);
     end
 end
 
@@ -30,19 +30,19 @@ if ( abs(NextPose(3) - Pose(3))/time > 2)  % more than 2 m/s
 end
 
 % check if x,y velocity are too big
-if ( abs(NextPose(1) - Pose(1))/time > 1)  % more than 1 m/s
+if ( abs(NextPose(1) - Pose(1))/time > 1.1)  % more than 1.1 m/s
     if NextPose(1)>Pose(1)
-        NextPose(1) = 1*time + Pose(1);
+        NextPose(1) = 1.1*time + Pose(1);
     else
-        NextPose(1) = -1*time + Pose(1);
+        NextPose(1) = -1.1*time + Pose(1);
     end
 end
 
-if ( abs(NextPose(2) - Pose(2))/time > 1)  % more than 1 m/s
+if ( abs(NextPose(2) - Pose(2))/time > 1.1)  % more than 1.1 m/s
     if NextPose(2)>Pose(2)
-        NextPose(2) = 1*time + Pose(2);
+        NextPose(2) = 1.1*time + Pose(2);
     else
-        NextPose(2) = -1*time + Pose(2);
+        NextPose(2) = -1.1*time + Pose(2);
     end
 end
 
