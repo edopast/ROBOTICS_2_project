@@ -20,31 +20,31 @@ if ( abs(NextPose(4) - Pose(4))/time > 1.5)  % more than 1.5 rad/s
     end
 end
 
-% check if z velocity is too big
-if ( abs(NextPose(3) - Pose(3))/time > 2)  % more than 2 m/s
-    if NextPose(3)>Pose(3)
-        NextPose(3) = 2*time + Pose(3);
-    else
-        NextPose(3) = -2*time + Pose(3);
-    end
-end
-
-% check if x,y velocity are too big
-if ( abs(NextPose(1) - Pose(1))/time > 1.1)  % more than 1.1 m/s
-    if NextPose(1)>Pose(1)
-        NextPose(1) = 1.1*time + Pose(1);
-    else
-        NextPose(1) = -1.1*time + Pose(1);
-    end
-end
-
-if ( abs(NextPose(2) - Pose(2))/time > 1.1)  % more than 1.1 m/s
-    if NextPose(2)>Pose(2)
-        NextPose(2) = 1.1*time + Pose(2);
-    else
-        NextPose(2) = -1.1*time + Pose(2);
-    end
-end
+% % check if z velocity is too big
+% if ( abs(NextPose(3) - Pose(3))/time > 3)  % more than 3 m/s
+%     if NextPose(3)>Pose(3)
+%         NextPose(3) = 3*time + Pose(3);
+%     else
+%         NextPose(3) = -3*time + Pose(3);
+%     end
+% end
+%  
+% % check if x,y velocity are too big
+% if ( abs(NextPose(1) - Pose(1))/time > 1.1)  % more than 1.1 m/s
+%     if NextPose(1)>Pose(1)
+%         NextPose(1) = 1.1*time + Pose(1);
+%     else
+%         NextPose(1) = -1.1*time + Pose(1);
+%     end
+% end
+% 
+% if ( abs(NextPose(2) - Pose(2))/time > 1.1)  % more than 1.1 m/s
+%     if NextPose(2)>Pose(2)
+%         NextPose(2) = 1.1*time + Pose(2);
+%     else
+%         NextPose(2) = -1.1*time + Pose(2);
+%     end
+% end
 
 % use a convex combination
 for i=1:size(time_vector,2)
