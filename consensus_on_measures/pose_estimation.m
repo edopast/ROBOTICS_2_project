@@ -13,22 +13,22 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
 %         - convex_hull_estimated: convexhull constructed with estimated_x,
 %                                  estimated_y; plotting reason
 
-% since reference system is solidal with UGV, we have [0,0] as coords
-    ugv_xw = 0;   
-    ugv_yw = 0; 
-    ugv_zw = 0;
+
 % the motion of the UGV is simulated at UAVs level (offset variable)
     x_offset = ugv.trajectory.signals.values(t,1);
     y_offset = ugv.trajectory.signals.values(t,2);
+    
+    ugv.xw = ugv.trajectory.signals.values(t,1);
+    ugv.yw = ugv.trajectory.signals.values(t,2);
     
     form_ref_x= zeros(form_auv.n,1);
     form_ref_y= zeros(form_auv.n,1);
     form_ref_z= zeros(form_auv.n,1);
    
     for i = 1:form_auv.n
-        form_ref_x(i,1) = form_auv.xr(i,1)-x_offset;
-        form_ref_y(i,1) = form_auv.yr(i,1)-y_offset;
-        form_ref_z(i,1) = form_auv.zr(i,1);
+        form_ref_x(i,1) = form_auv.xw(i,1);%;-x_offset;
+        form_ref_y(i,1) = form_auv.yw(i,1);%;-y_offset;
+        form_ref_z(i,1) = form_auv.zw(i,1);
         % da modificare l'altezza ottenuta dalla formazione 
     end
   
@@ -58,16 +58,16 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
     point_4y = zeros(form_auv.n,1);
     point_4_bool = zeros(form_auv.n,1);
     
-    P1 = [ugv.P1(1); ugv.P1(2); ugv.P1(3)]; %[m]
-    P2 = [ugv.P2(1); ugv.P2(2); ugv.P2(3)]; %[m]
-    P3 = [ugv.P3(1); ugv.P3(2); ugv.P3(3)]; %[m]
-    P4 = [ugv.P4(1); ugv.P4(2); ugv.P4(3)]; %[m]
+    P1 = [ugv.P1(1)+x_offset; ugv.P1(2)+y_offset; ugv.P1(3)]; %[m]
+    P2 = [ugv.P2(1)+x_offset; ugv.P2(2)+y_offset; ugv.P2(3)]; %[m]
+    P3 = [ugv.P3(1)+x_offset; ugv.P3(2)+y_offset; ugv.P3(3)]; %[m]
+    P4 = [ugv.P4(1)+x_offset; ugv.P4(2)+y_offset; ugv.P4(3)]; %[m]
     
     for i = 1:form_auv.n
         
         [yn(i),x_result(i),y_result(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
             form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], ...
-            [ugv_xw ugv_yw 0]);
+            [x_offset y_offset 0]);
     
         [point_1_bool(i),point_1x(i),point_1y(i)] = computeCameraImage([form_ref_x(i,1) form_ref_y(i,1) ...
             form_ref_z(i,1)], [form_auv.rollr(i,1) form_auv.pitchr(i,1) form_auv.yawr(i,1)], P1.');
@@ -115,10 +115,12 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
     end
     
     % plot the actual image that is seen by one of the UAVs
-    % k = 1;
-    % plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
-    %     point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), ...
-    %     point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
+    figure(500);
+    k = 2;
+    plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
+        point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), ...
+        point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
+%     waitforbuttonpress;
 
     % initialization of variable that will contain relative pose and
     % orientation of the UAVs wrt the UGV
