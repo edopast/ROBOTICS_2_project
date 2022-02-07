@@ -22,5 +22,16 @@ for i = flip(index)
     struct.yawr(i)   = [];
     
     struct.real_traj(i) = [];
+    
+    
 end
+
+for i = 1 : struct.n
+    if struct.id(i)~= 0 
+        struct.id(i) = i;
+    end
+end
+
+
+
 end

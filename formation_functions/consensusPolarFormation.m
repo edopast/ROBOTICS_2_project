@@ -1,4 +1,4 @@
-function [agents] = consensusPolarFormation(agents, ugv, formation, new, progress_rate)
+function [agents] = consensusPolarFormation(agents, ugv, formation, new, progress_rate, depart_alarm_rate)
 %% Function that compute the position at the next iteration of the agentss with polar consensus
 
 % Parameters description:
@@ -12,6 +12,9 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     
     if(new)
         agents.dth_d = zeros(agents.n,1);
+        if isfield(agents,'graph')
+            agents = rmfield(agents,"graph");
+        end
     end
     
     % Retrieve agents positions wrt robot frame
@@ -49,24 +52,24 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     % L = Ddegree - Adjacency
     
     % every node of the graph has 2 degree
-    D_deg = 2 * eye(agents.n);
+    agents.graph.D_deg = 2 * eye(agents.n);
     
     % for the adjacency matrix, first we define the edges:
-    edges = [agents.id(1:agents.n-1), agents.id(2:agents.n);
-             agents.id(agents.n),     agents.id(1)         ];
+    agents.graph.edges = [agents.id(1:agents.n-1), agents.id(2:agents.n);
+                           agents.id(agents.n),     agents.id(1)         ];
          
     % define the graph
-    G = graph(edges(:,1),edges(:,2));
+    agents.graph.G = graph(agents.graph.edges(:,1),agents.graph.edges(:,2));
     
     % finally the adjacency matrix
-    A = full(adjacency(G));
+    agents.graph.A = full(adjacency(agents.graph.G));
     
     % the Laplacian matrix
-    L = D_deg - A;
+    agents.graph.L = agents.graph.D_deg - agents.graph.A;
     
     % define the value for epsilon and the P matrix, such that P = I - eL
     eps = 1/3;
-    P_dth = eye(agents.n) - eps*L;
+    P_dth = eye(agents.n) - eps*agents.graph.L;
     
     % update delta -> obtain delta "desired" with consensus
     if(new) % compute delta desired based on actual measurement
@@ -87,38 +90,71 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
         temp_th = temp_th - 2*pi;
     end
     agents.th(1) = temp_th;
-    agents.th_d = (agents.id-1).* agents.dth_d;
-    agents.th_err = agents.th_d - agents.th;
     
-    agents.rho_d = zeros(agents.n,1);
-    agents.zr_d = zeros(agents.n,1);
+    % theta desired is defined according to the auv's ID
+    agents.th_d = (agents.id-1).* agents.dth_d;
     agents.yawr_d = pi + agents.th;
     
-    % Controller gains
-    agents.K_rho = 0.08 * ones(agents.n,1);
-    agents.K_th = 0.03 * ones(agents.n,1);
+    agents.th_err = agents.th_d - agents.th;
+    agents.yawr_err = agents.yawr_d - agents.yawr;
     
     for i = 1 : agents.n
-        if abs(agents.th_err(i)) > 0.2
-            agents.rho_d(i) = formation.r + agents.id(i) * formation.offset;
-            agents.zr_d(i) = formation.alt + agents.id(i) * formation.offset;
-        else
-            agents.rho_d(i) = formation.r;
-            agents.zr(i) = formation.alt;
+        
+        if agents.th_err(i) > pi
+            agents.th_err(i) = - agents.th_err(i);
+        end
+        
+        if agents.yawr_err(i) > pi
+%             agents.yawr_err(i) = - agents.yawr_err(i);
         end
         
     end
     
+    
+    % Controller gains
+    agents.K_rho = 0.08 * ones(agents.n,1);
+    agents.K_th  = 0.03 * ones(agents.n,1);
+    
+    % Compute altitude and rho desired references
+    
+    agents.rho_d = zeros(agents.n,1);
+    agents.zr_d  = zeros(agents.n,1);
+    
+    for i = 1 : agents.n
+        if abs(agents.th_err(i)) > depart_alarm_rate
+            agents.rho_d(i) = formation.r   + agents.id(i) * formation.offset;
+            agents.zr_d(i)  = formation.alt + agents.id(i) * formation.offset;
+        else
+            agents.rho_d(i) = formation.r;
+            agents.zr(i)    = formation.alt;
+        end
+    end
+    
     agents.rho_err = agents.rho_d - agents.rho;
-    agents.zr_err = agents.zr_d - agents.zr;
-    agents.yawr_err = agents.yawr_d - agents.yawr;
+    agents.zr_err  = agents.zr_d  - agents.zr;
+   
 
     % P-controllers
-    agents.th = agents.th +  agents.K_th .* agents.th_err;
-    agents.rho = agents.rho + agents.K_rho .* agents.rho_err;
-    agents.zr = agents.zr + agents.K_rho .* agents.zr_err;
-    agents.yawr = agents.yawr + 0.1* agents.yawr_err;
     
+    variation.th  = agents.K_th  .* agents.th_err;
+    variation.rho = agents.K_rho .* agents.rho_err;
+    
+    % Take in to account the speed saturation
+    for i = i : agents.n
+        if abs(variation.th(i)) > (0.2/formation.r)
+            variation.th(i) = sign(variation.th(i)) * (0.2/formation.r);
+        end
+        
+        if abs(variation.rho(i)) > 0.2
+            variation.rho(i) = sign(variation.rho(i)) * 0.2;
+        end
+    end
+    agents.th   = agents.th   +  variation.th;
+    agents.rho  = agents.rho  +  variation.rho;
+    agents.zr   = agents.zr   +  agents.K_rho .* agents.zr_err;
+    agents.yawr = agents.yawr +  0.09 * agents.yawr_err;
+
+%     agents.yawr = agents.yawr_d;
     
     % Update cartesian coords in the two frames and get the travelled dist
     prev_pos.xr = agents.xr;
