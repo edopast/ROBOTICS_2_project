@@ -1,7 +1,7 @@
 %% UGV trajectory generation
 
 % Experimental time [s]
-T = 50;
+T = 55;
 Ts = 1e-3;
 
 %% linear and angular desired velocities
@@ -19,35 +19,35 @@ v_ref.signals.dimensions = 1;
 v_ref.time = zeros(T/Ts,1);
 
 for i = 1:(T/Ts-1)
-    if (i <= 10000)
+    if (i <= 15000)
         w_ref.signals.values(i+1) = 0.0;
         v_ref.signals.values(i+1) = 0.0;
     % small initial turn
-    elseif (i>10000 && i<=11000)
+    elseif (i>15000 && i<=16000)
         w_ref.signals.values(i+1) = constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.8*constant_desired_velocity_v;
     % then go straight
-    elseif (i>11000 && i<=12000)
+    elseif (i>16000 && i<=17000)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = constant_desired_velocity_v;
     % then turn again
-    elseif (i>12000 && i<=18000)
+    elseif (i>17000 && i<=23000)
         w_ref.signals.values(i+1) = constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.8*constant_desired_velocity_v;
     % go straight a little bit
-    elseif (i>18000 && i<=19500)
+    elseif (i>23000 && i<=24500)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = constant_desired_velocity_v;
     % turn in other direction with greater velocity
-    elseif (i>19500 && i<=28000)
+    elseif (i>24500 && i<=33000)
         w_ref.signals.values(i+1) = -1.6*constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.4*constant_desired_velocity_v;
     % straight again (higher velocity)
-    elseif (i>28000 && i<=35000)
+    elseif (i>33000 && i<=40000)
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = 1.1*constant_desired_velocity_v;    
     % turn
-    elseif (i>35000 && i<=43000)
+    elseif (i>40000 && i<=48000)
         w_ref.signals.values(i+1) = -constant_desired_velocity_w;
         v_ref.signals.values(i+1) = 0.7*constant_desired_velocity_v;
     else

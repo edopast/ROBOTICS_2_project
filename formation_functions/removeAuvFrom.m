@@ -23,6 +23,8 @@ for i = flip(index)
     
     struct.real_traj(i) = [];
     
+    struct.record(i) = [];
+    
     
 end
 
