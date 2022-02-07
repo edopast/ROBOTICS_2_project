@@ -19,6 +19,6 @@ form_auv.rollr(form_auv.n,1)  = auv.rollr(index);
 form_auv.pitchr(form_auv.n,1) = auv.pitchr(index);   
 form_auv.yawr(form_auv.n,1)   = auv.yawr(index);   
 
-% form_auv.record.traj = auv.record.traj;
+form_auv.real_traj(form_auv.n,1) = auv.real_traj(index);
 
 end

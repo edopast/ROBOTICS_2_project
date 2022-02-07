@@ -115,11 +115,11 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
     end
     
     % plot the actual image that is seen by one of the UAVs
-    figure(500);
-    k = 2;
-    plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
-        point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), ...
-        point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
+%     figure(500);
+%     k = 2;
+%     plotting_image_point(yn(k), point_1_bool(k), point_2_bool(k), point_3_bool(k), ...
+%         point_4_bool(k),x_result(k),y_result(k),point_1x(k),point_1y(k), ...
+%         point_2x(k),point_2y(k),point_3x(k),point_3y(k), point_4x(k),point_4y(k))
 %     waitforbuttonpress;
 
     % initialization of variable that will contain relative pose and
