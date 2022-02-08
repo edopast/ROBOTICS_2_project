@@ -25,6 +25,7 @@ plot3(p_ref.signals.values(:,1), p_ref.signals.values(:,2), p_ref.signals.values
 hold on
 grid on;
 title('UAVtrajectory');
+axis([-2 4 -1 6 0 1.5]);
 legendInfo=string(zeros(2,1));
 legendInfo(1, 1) = sprintf('Desired');
 legendInfo(2, 1) = sprintf('True');

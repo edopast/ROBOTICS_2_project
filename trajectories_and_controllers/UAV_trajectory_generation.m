@@ -34,10 +34,11 @@ for i = 2:size(UGVRealPose.Pose.time,1)
     % find the next time of the UGV trajectory simulation
     next_time = UGVRealPose.Pose.time(i);
     
-    % run function. NOTE: NextPose has a 4.2 m offset from starting
+    % run function. NOTE: NextPose has a 4 m offset from starting
     % position!
     Pose=[p_ref.signals.values(index,1) p_ref.signals.values(index,2) p_ref.signals.values(index,3) yaw_ref.signals.values(index,1)];
-    NextPose=[UGVRealPose.Pose.signals.values(i,1)+3 UGVRealPose.Pose.signals.values(i,2)+3 1 UGVRealPose.Pose.signals.values(i,3)+pi];
+    NextPose=[UGVRealPose.Pose.signals.values(i,1)+2 UGVRealPose.Pose.signals.values(i,2)+2 1 UGVRealPose.Pose.signals.values(i,3)+pi];
+    
     
     Trajectory = computeUAVTrajectory(Pose,NextPose,round(next_time-current_time,3));
     

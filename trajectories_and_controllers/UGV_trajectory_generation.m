@@ -41,7 +41,7 @@ for i = 1:(T/Ts-1)
     % turn in other direction with greater velocity
     elseif (i>24500 && i<=33000)
         w_ref.signals.values(i+1) = -1.6*constant_desired_velocity_w;
-        v_ref.signals.values(i+1) = 0.4*constant_desired_velocity_v;
+        v_ref.signals.values(i+1) = 0.25*constant_desired_velocity_v;
     % straight again (higher velocity)
     elseif (i>33000 && i<=40000)
         w_ref.signals.values(i+1) = 0;
@@ -49,7 +49,7 @@ for i = 1:(T/Ts-1)
     % turn
     elseif (i>40000 && i<=48000)
         w_ref.signals.values(i+1) = -constant_desired_velocity_w;
-        v_ref.signals.values(i+1) = 0.7*constant_desired_velocity_v;
+        v_ref.signals.values(i+1) = 0.6*constant_desired_velocity_v;
     else
         w_ref.signals.values(i+1) = 0;
         v_ref.signals.values(i+1) = constant_desired_velocity_v;
