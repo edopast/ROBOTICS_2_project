@@ -1,4 +1,4 @@
-function [agents] = consensusPolarFormation(agents, ugv, formation, new, progress_rate, depart_alarm_rate)
+function [agents] = consensusPolarFormation(agents, ugv, formation, progress_rate, depart_alarm_rate)
 %% Function that compute the position at the next iteration of the agentss with polar consensus
 
 % Parameters description:
@@ -9,7 +9,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
 % has to be calculated, the store parameters are cleared
 % progress_rate: progress rate for the consensus convergence
 
-    
+    new = formation.update;
     if(new)
         agents.dth_d = zeros(agents.n,1);
         if isfield(agents,'graph')
@@ -71,6 +71,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
     eps = 1/3;
     P_dth = eye(agents.n) - eps*agents.graph.L;
     
+    
     % update delta -> obtain delta "desired" with consensus
     if(new) % compute delta desired based on actual measurement
         agents.dth_d = P_dth * agents.dth;
@@ -82,7 +83,9 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, new, progres
             progress = (temp-agents.dth_d).'*(temp-agents.dth_d);
         end
     end
-
+    
+    
+    
 %% Theta and rho controllers
 
     % theta desired is defined according to the auv's ID
