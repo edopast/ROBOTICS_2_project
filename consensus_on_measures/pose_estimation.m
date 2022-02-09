@@ -30,7 +30,7 @@ function [estimated_x,estimated_y,convex_hull_estimated, points_image_plane_y] =
         form_ref_x(i,1) = form_auv.xw(i,1);%;-x_offset;
         form_ref_y(i,1) = form_auv.yw(i,1);%;-y_offset;
         form_ref_z(i,1) = form_auv.zw(i,1);
-        % da modificare l'altezza ottenuta dalla formazione 
+        
     end
   
     % UGV point representation (only for plotting purpose; the UAVs
