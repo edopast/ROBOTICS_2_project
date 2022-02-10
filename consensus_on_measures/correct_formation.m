@@ -47,10 +47,10 @@ convex_hull = convex_hull.';
 [k,av] = convhull(convex_hull);
 plot(x,y,'LineWidth',1);
 hold on
-plot(convex_hull(:,1),convex_hull(:,2),'.')
+%plot(convex_hull(:,1),convex_hull(:,2),'.')
 hold on
 plot(ugv_xw,ugv_yw, '.')
-plot(convex_hull(k,1),convex_hull(k,2), 'LineWidth',1)
+%plot(convex_hull(k,1),convex_hull(k,2), 'LineWidth',1)
 
 
 end

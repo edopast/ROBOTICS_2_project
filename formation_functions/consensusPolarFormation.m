@@ -96,7 +96,7 @@ function [agents] = consensusPolarFormation(agents, ugv, formation, progress_rat
     
     % theta desired is defined according to the auv's ID
     agents.th_d = (agents.id-1).* agents.dth_d;
-    agents.yawr_d = pi + agents.th;
+    agents.yawr_d = - pi + agents.th;
     
     agents.th_err = agents.th_d - agents.th;
     agents.yawr_err = agents.yawr_d - agents.yawr;
